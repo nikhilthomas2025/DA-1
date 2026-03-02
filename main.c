@@ -19,4 +19,13 @@ void init(){
 }
 int main(){
     init();
+    int ch=0;
+
+    while(ch!=6){
+        printf("\n\n\n======================");
+        printf("\n1.Add New Book to Library\n2.Issue Book to Student\n3.Return Book\n4.Search Book\n5.Display Library\n6.Exit\n");
+        printf("\nEnter Choise: ");
+        scanf("%d",&ch);
+    }
+
     return 0;}
