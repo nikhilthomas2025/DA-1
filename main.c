@@ -9,10 +9,10 @@ struct Book{
 };
 
 void init(){
-    FILE *fp=fopen("record.txt","r");
+    FILE *fp=fopen("record.bin","rb");
     fclose(fp);
     if(fp==NULL){
-        fp=fopen("record.txt","w");
+        fp=fopen("record.bin","wb");
         fclose(fp);
     }
 
