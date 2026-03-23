@@ -1,0 +1,5 @@
+addbook()
+fgets(bk.Title,40,stdin):
+consulting error correction ofr \n clearing
+file saved check
+

@@ -21,19 +21,40 @@ void init(){
 
 }
 
-void AddBook(){
-    Book bk;char temp[40];
-    printf("\n\n=====Enter Details=====\n");
-    printf("Book ID  : ");scanf("%5s",bk.BookID);
-    printf("Title    : ");scanf("%s",bk.Title);
-    printf("Author   : ");scanf("%s%s",bk.Author,temp);strcat(bk.Author," ");strcat(bk.Author,temp);
-    bk.status=0;
-    strcpy(bk.regno,"");
+void AddBook() {
+    Book bk;
+    printf("\n\n===== Enter Details =====\n");
 
+    printf("Book ID  : ");
+    fgets(bk.BookID, 6, stdin);
+    bk.BookID[strcspn(bk.BookID, "\n")] = 0;
+
+    printf("Title    : ");
+    fgets(bk.Title, 40, stdin);
+    bk.Title[strcspn(bk.Title, "\n")] = 0; 
+
+    printf("Author   : ");
+    fgets(bk.Author, 40, stdin);
+    bk.Author[strcspn(bk.Author, "\n")] = 0; 
+
+    bk.status = 0;
+    strcpy(bk.regno, "");
+
+    FILE* fp = fopen("record.bin", "ab");
+    size_t written = fwrite(&bk, sizeof(Book), 1, fp);
     
-
+    if (fclose(fp) == 0 && written == 1) {
+        printf("\n====== Book Saved Successfully ======\n");
+    } else {
+        printf("\n===== ERROR: Book NOT Saved =====\n");
+    }
 }
 
+void IssueBook(){
+    Book bk;char temp;
+    printf("\n\n=====Enter Details=====\n");
+    printf("\nBook ID  : ");fgets(bk.BookID,6,stdin);bk.BookID[5]='\0';
+}
 
 int main(){
     init();
