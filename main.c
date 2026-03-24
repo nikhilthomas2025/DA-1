@@ -51,9 +51,30 @@ void AddBook() {
 }
 
 void IssueBook(){
-    Book bk;char temp;
+    Book bk;char ID[5],regno[9];
     printf("\n\n=====Enter Details=====\n");
-    printf("\nBook ID  : ");fgets(bk.BookID,6,stdin);bk.BookID[5]='\0';
+    printf("\nBook ID : ");scanf("%s",ID);
+    printf("\nRegNo   : ");scanf("%s",regno);
+
+    int size=sizeof(Book),flag=0;
+    FILE* fp=fopen("record.bin","ab");
+    while(fread(&bk,size,1,fp)){
+        if(strcmp(bk.ID,ID)==0){
+            if(bk.status)printf("\nBook is already issued.\n");
+            else{
+                flag=1;
+                bk.status=1;
+                strcpy(bk.regno,regno);
+                fseek(fp,-size,SEEK_CUR);
+                fwrite(&bk,size,1,fp);
+                printf("\n======Book Issued======\n");
+            }
+            break;
+        }
+    }
+    if(!flag) printf("\n====Book Not Found=====\n");
+
+    fclose(fp);
 }
 
 int main(){
