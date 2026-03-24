@@ -108,6 +108,57 @@ void ReturnBook(){
     fclose(fp);
 }
 
+void SearchBook(){
+    Book bk;char ID[5];
+    printf("\n\n=====Enter Details=====\n");
+    printf("\nBook ID : ");scanf("%s",ID);
+
+    int size=sizeof(Book),flag=0;
+    FILE* fp=fopen("record.bin","rb+");
+    if (fp == NULL) {
+        printf("\nError: Could not open record file.\n");
+        fclose(fp);
+        return;
+    }
+    while(fread(&bk,size,1,fp)){
+        if(strcmp(bk.ID,ID)==0){
+            flag=1;
+            printf("\n======Book Found=======\n");
+            printf("\nBook ID:",bk.ID);
+            printf("\nTile   :",bk.Title);
+            printf("\nAuthor :",bk.Author);
+            if(bk.status)printf("\n\nIssued to:",bk.regno);
+            else printf("\n\nNot Issued.");
+
+            break;
+        }
+    }
+    if(!flag) printf("\n====Book Not Found=====\n");
+
+    fclose(fp);
+}
+
+void Display(){
+    Book bk;
+    printf("\n\n========Library========\n");
+
+    int size=sizeof(Book);
+    FILE* fp=fopen("record.bin","rb");
+    if (fp == NULL) {
+        printf("\nError: Could not open record file.\n");
+        fclose(fp);
+        return;
+    }
+    while(fread(&bk,size,1,fp)){
+            printf("\nBook ID:",bk.ID);
+            printf("\nTile   :",bk.Title);
+            printf("\nAuthor :",bk.Author);
+            if(bk.status)printf("\n\nIssued to:",bk.regno);
+            else printf("\n\nNot Issued.");
+            printf("\n======\n");
+    }
+    fclose(fp);
+}
 int main(){
     init();
     int ch=0;
