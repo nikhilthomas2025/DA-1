@@ -2,137 +2,166 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define FILE_NAME "record.bin"
+
 struct Book_Entry{
-    char BookID[5];
+    char BookID[11];
     char Title[40];
     char Author[40];
-    unsigned int status:1;
+    int status;          // safer than bit-field
     char regno[9];
 };
 
 typedef struct Book_Entry Book;
-void init(){
-    FILE *fp=fopen("record.bin","rb");
-    fclose(fp);
-    if(fp==NULL){
-        fp=fopen("record.bin","wb");
-        fclose(fp);
-    }
 
+void init(){
+    FILE *fp = fopen(FILE_NAME, "rb");
+    if(fp == NULL){
+        fp = fopen(FILE_NAME, "wb");
+    }
+    if(fp != NULL) fclose(fp);
 }
 
 void AddBook() {
     Book bk;
+
     printf("\n\n===== Enter Details =====\n");
 
+    getchar(); // clear buffer
+
     printf("Book ID  : ");
-    fgets(bk.BookID, 5, stdin);
+    fgets(bk.BookID, sizeof(bk.BookID), stdin);
     bk.BookID[strcspn(bk.BookID, "\n")] = 0;
 
     printf("Title    : ");
-    fgets(bk.Title, 40, stdin);
-    bk.Title[strcspn(bk.Title, "\n")] = 0; 
+    fgets(bk.Title, sizeof(bk.Title), stdin);
+    bk.Title[strcspn(bk.Title, "\n")] = 0;
 
     printf("Author   : ");
-    fgets(bk.Author, 40, stdin);
-    bk.Author[strcspn(bk.Author, "\n")] = 0; 
+    fgets(bk.Author, sizeof(bk.Author), stdin);
+    bk.Author[strcspn(bk.Author, "\n")] = 0;
 
     bk.status = 0;
-    strcpy(bk.regno, "");
+    bk.regno[0] = '\0';
 
-    FILE* fp = fopen("record.bin", "ab");
-    size_t written = fwrite(&bk, sizeof(Book), 1, fp);
-    
-    if (fclose(fp) == 0 && written == 1) {
+    FILE* fp = fopen(FILE_NAME, "ab");
+    if(fp == NULL){
+        printf("\nError opening file.\n");
+        return;
+    }
+
+    if(fwrite(&bk, sizeof(Book), 1, fp) == 1){
         printf("\n====== Book Saved Successfully ======\n");
     } else {
         printf("\n===== ERROR: Book NOT Saved =====\n");
     }
+
+    fclose(fp);
 }
 
 void IssueBook(){
-    Book bk;char ID[5],regno[9];
-    printf("\n\n=====Enter Details=====\n");
-    printf("\nBook ID : ");scanf("%s",ID);
-    printf("\nRegNo   : ");scanf("%s",regno);
+    Book bk;
+    char ID[11], regno[9];
 
-    int size=sizeof(Book),flag=0;
-    FILE* fp=fopen("record.bin","rb+");
-    while(fread(&bk,size,1,fp)){
-        if(strcmp(bk.BookID,ID)==0){
-            flag=1;
-            if(bk.status)printf("\nBook is already issued.\n");
-            else{ 
-                bk.status=1;
-                strcpy(bk.regno,regno);
-                fseek(fp,-size,SEEK_CUR);
-                fwrite(&bk,size,1,fp);
+    printf("\n\n=====Enter Details=====\n");
+    printf("Book ID : "); scanf("%5s", ID);
+    printf("RegNo   : "); scanf("%8s", regno);
+
+    FILE* fp = fopen(FILE_NAME, "rb+");
+    if(fp == NULL){
+        printf("\nError opening file.\n");
+        return;
+    }
+
+    int flag = 0;
+    while(fread(&bk, sizeof(Book), 1, fp)){
+        if(strcmp(bk.BookID, ID) == 0){
+            flag = 1;
+            if(bk.status){
+                printf("\nBook is already issued.\n");
+            } else {
+                bk.status = 1;
+                strcpy(bk.regno, regno);
+                fseek(fp, -sizeof(Book), SEEK_CUR);
+                fwrite(&bk, sizeof(Book), 1, fp);
                 printf("\n======Book Issued======\n");
             }
             break;
         }
     }
+
     if(!flag) printf("\n====Book Not Found=====\n");
 
     fclose(fp);
 }
 
 void ReturnBook(){
-    Book bk;char ID[5];
-    printf("\n\n=====Enter Details=====\n");
-    printf("\nBook ID : ");scanf("%s",ID);
+    Book bk;
+    char ID[11];
 
-    int size=sizeof(Book),flag=0;
-    FILE* fp=fopen("record.bin","rb+");
-    if (fp == NULL) {
-        printf("\nError: Could not open record file.\n");
-        fclose(fp);
+    printf("\n\n=====Enter Details=====\n");
+    printf("Book ID : "); scanf("%5s", ID);
+
+    FILE* fp = fopen(FILE_NAME, "rb+");
+    if(fp == NULL){
+        printf("\nError opening file.\n");
         return;
     }
-    while(fread(&bk,size,1,fp)){
-        if(strcmp(bk.BookID,ID)==0){
-            flag=1;
+
+    int flag = 0;
+    while(fread(&bk, sizeof(Book), 1, fp)){
+        if(strcmp(bk.BookID, ID) == 0){
+            flag = 1;
             if(bk.status){
-                bk.status=0;
-                strcpy(bk.regno,"\0");
-                fseek(fp,-size,SEEK_CUR);
-                fwrite(&bk,size,1,fp);
+                bk.status = 0;
+                bk.regno[0] = '\0';
+                fseek(fp, -sizeof(Book), SEEK_CUR);
+                fwrite(&bk, sizeof(Book), 1, fp);
                 printf("\n=====Book Returned=====\n");
+            } else {
+                printf("\nBook is Not issued.\n");
             }
-            else printf("\nBook is Not issued.\n");
             break;
         }
     }
+
     if(!flag) printf("\n====Book Not Found=====\n");
 
     fclose(fp);
 }
 
 void SearchBook(){
-    Book bk;char ID[5];
-    printf("\n\n=====Enter Details=====\n");
-    printf("\nBook ID : ");scanf("%s",ID);
+    Book bk;
+    char ID[11];
 
-    int size=sizeof(Book),flag=0;
-    FILE* fp=fopen("record.bin","rb+");
-    if (fp == NULL) {
-        printf("\nError: Could not open record file.\n");
-        fclose(fp);
+    printf("\n\n=====Enter Details=====\n");
+    printf("Book ID : "); scanf("%5s", ID);
+
+    FILE* fp = fopen(FILE_NAME, "rb");
+    if(fp == NULL){
+        printf("\nError opening file.\n");
         return;
     }
-    while(fread(&bk,size,1,fp)){
-        if(strcmp(bk.BookID,ID)==0){
-            flag=1;
+
+    int flag = 0;
+    while(fread(&bk, sizeof(Book), 1, fp)){
+        if(strcmp(bk.BookID, ID) == 0){
+            flag = 1;
+
             printf("\n======Book Found=======\n");
-            printf("\nBook ID:",bk.BookID);
-            printf("\nTile   :",bk.Title);
-            printf("\nAuthor :",bk.Author);
-            if(bk.status)printf("\n\nIssued to:",bk.regno);
-            else printf("\n\nNot Issued.");
+            printf("\nBook ID: %s", bk.BookID);
+            printf("\nTitle  : %s", bk.Title);
+            printf("\nAuthor : %s", bk.Author);
+
+            if(bk.status)
+                printf("\nIssued to: %s\n", bk.regno);
+            else
+                printf("\nNot Issued.\n");
 
             break;
         }
     }
+
     if(!flag) printf("\n====Book Not Found=====\n");
 
     fclose(fp);
@@ -140,42 +169,57 @@ void SearchBook(){
 
 void Display(){
     Book bk;
+
     printf("\n\n========Library========\n");
 
-    int size=sizeof(Book);
-    FILE* fp=fopen("record.bin","rb");
-    if (fp == NULL) {
-        printf("\nError: Could not open record file.\n");
-        fclose(fp);
+    FILE* fp = fopen(FILE_NAME, "rb");
+    if(fp == NULL){
+        printf("\nError opening file.\n");
         return;
     }
-    while(fread(&bk,size,1,fp)){
-            printf("\nBook ID:",bk.BookID);
-            printf("\nTile   :",bk.Title);
-            printf("\nAuthor :",bk.Author);
-            if(bk.status)printf("\n\nIssued to:",bk.regno);
-            else printf("\n\nNot Issued.");
-            printf("\n======\n");
+
+    while(fread(&bk, sizeof(Book), 1, fp)){
+        printf("\nBook ID: %s", bk.BookID);
+        printf("\nTitle  : %s", bk.Title);
+        printf("\nAuthor : %s", bk.Author);
+
+        if(bk.status)
+            printf("\nIssued to: %s", bk.regno);
+        else
+            printf("\nNot Issued.");
+
+        printf("\n======================\n");
     }
+
     fclose(fp);
 }
+
 int main(){
     init();
-    int ch=0;
 
-    while(ch!=6){
+    int ch = 0;
+
+    while(ch != 6){
         printf("\n\n=======================\n");
-        printf("\n1.Add New Book to Library\n2.Issue Book to Student\n3.Return Book\n4.Search Book\n5.Display Library\n6.Exit\n");
-        printf("\nEnter Choise: ");scanf("%d",&ch);
+        printf("1.Add New Book\n2.Issue Book\n3.Return Book\n4.Search Book\n5.Display Library\n6.Exit\n");
+        printf("Enter Choice: ");
+
+        if(scanf("%d", &ch) != 1){
+            printf("Invalid input.\n");
+            while(getchar() != '\n'); // clear buffer
+            continue;
+        }
+
         switch(ch){
-            case 1:AddBook();break;
-            case 2:IssueBook();break;
-            case 3:ReturnBook();break;
-            case 4:SearchBook();break;
-            case 5:Display();break;
-            case 6:printf("\n========EXITING========\n");break;
-            default:printf("\n====Invalid  Choise====\n");break;
+            case 1: AddBook(); break;
+            case 2: IssueBook(); break;
+            case 3: ReturnBook(); break;
+            case 4: SearchBook(); break;
+            case 5: Display(); break;
+            case 6: printf("\n========EXITING========\n"); break;
+            default: printf("\n====Invalid Choice====\n");
         }
     }
 
-    return 0;}
+    return 0;
+}
