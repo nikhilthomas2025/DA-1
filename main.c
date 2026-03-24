@@ -162,18 +162,17 @@ void Display(){
 int main(){
     init();
     int ch=0;
-    AddBook();
-    return 1;
+
     while(ch!=6){
         printf("\n\n=======================\n");
         printf("\n1.Add New Book to Library\n2.Issue Book to Student\n3.Return Book\n4.Search Book\n5.Display Library\n6.Exit\n");
         printf("\nEnter Choise: ");scanf("%d",&ch);
         switch(ch){
-            case 1:printf("\n1\n");break;
-            case 2:printf("\n2\n");break;
-            case 3:printf("\n3\n");break;
-            case 4:printf("\n4\n");break;
-            case 5:printf("\n5\n");break;
+            case 1:AddBook();break;
+            case 2:IssueBook();break;
+            case 3:ReturnBook();break;
+            case 4:SearchBook();break;
+            case 5:Display();break;
             case 6:printf("\n========EXITING========\n");break;
             default:printf("\n====Invalid  Choise====\n");break;
         }
