@@ -26,7 +26,7 @@ void AddBook() {
     printf("\n\n===== Enter Details =====\n");
 
     printf("Book ID  : ");
-    fgets(bk.BookID, 6, stdin);
+    fgets(bk.BookID, 5, stdin);
     bk.BookID[strcspn(bk.BookID, "\n")] = 0;
 
     printf("Title    : ");
