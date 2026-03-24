@@ -57,7 +57,7 @@ void IssueBook(){
     printf("\nRegNo   : ");scanf("%s",regno);
 
     int size=sizeof(Book),flag=0;
-    FILE* fp=fopen("record.bin","ab");
+    FILE* fp=fopen("record.bin","rb+");
     while(fread(&bk,size,1,fp)){
         if(strcmp(bk.ID,ID)==0){
             if(bk.status)printf("\nBook is already issued.\n");
