@@ -59,7 +59,7 @@ void IssueBook(){
     int size=sizeof(Book),flag=0;
     FILE* fp=fopen("record.bin","rb+");
     while(fread(&bk,size,1,fp)){
-        if(strcmp(bk.ID,ID)==0){
+        if(strcmp(bk.BookID,ID)==0){
             flag=1;
             if(bk.status)printf("\nBook is already issued.\n");
             else{ 
@@ -90,7 +90,7 @@ void ReturnBook(){
         return;
     }
     while(fread(&bk,size,1,fp)){
-        if(strcmp(bk.ID,ID)==0){
+        if(strcmp(bk.BookID,ID)==0){
             flag=1;
             if(bk.status){
                 bk.status=0;
@@ -121,10 +121,10 @@ void SearchBook(){
         return;
     }
     while(fread(&bk,size,1,fp)){
-        if(strcmp(bk.ID,ID)==0){
+        if(strcmp(bk.BookID,ID)==0){
             flag=1;
             printf("\n======Book Found=======\n");
-            printf("\nBook ID:",bk.ID);
+            printf("\nBook ID:",bk.BookID);
             printf("\nTile   :",bk.Title);
             printf("\nAuthor :",bk.Author);
             if(bk.status)printf("\n\nIssued to:",bk.regno);
@@ -150,7 +150,7 @@ void Display(){
         return;
     }
     while(fread(&bk,size,1,fp)){
-            printf("\nBook ID:",bk.ID);
+            printf("\nBook ID:",bk.BookID);
             printf("\nTile   :",bk.Title);
             printf("\nAuthor :",bk.Author);
             if(bk.status)printf("\n\nIssued to:",bk.regno);
