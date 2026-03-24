@@ -60,15 +60,46 @@ void IssueBook(){
     FILE* fp=fopen("record.bin","rb+");
     while(fread(&bk,size,1,fp)){
         if(strcmp(bk.ID,ID)==0){
+            flag=1;
             if(bk.status)printf("\nBook is already issued.\n");
-            else{
-                flag=1;
+            else{ 
                 bk.status=1;
                 strcpy(bk.regno,regno);
                 fseek(fp,-size,SEEK_CUR);
                 fwrite(&bk,size,1,fp);
                 printf("\n======Book Issued======\n");
             }
+            break;
+        }
+    }
+    if(!flag) printf("\n====Book Not Found=====\n");
+
+    fclose(fp);
+}
+
+void ReturnBook(){
+    Book bk;char ID[5];
+    printf("\n\n=====Enter Details=====\n");
+    printf("\nBook ID : ");scanf("%s",ID);
+
+    int size=sizeof(Book),flag=0;
+    FILE* fp=fopen("record.bin","rb+");
+    if (fp == NULL) {
+        printf("\nError: Could not open record file.\n");
+        fclose(fp);
+        return;
+    }
+    while(fread(&bk,size,1,fp)){
+        if(strcmp(bk.ID,ID)==0){
+            flag=1;
+            if(bk.status){
+                bk.status=0;
+                strcpy(bk.regno,"\0");
+                fseek(fp,-size,SEEK_CUR);
+                fwrite(&bk,size,1,fp);
+                printf("\n=====Book Returned=====\n");
+            }
+            else printf("\nBook is Not issued.\n");
             break;
         }
     }
