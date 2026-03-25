@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#endif
+
 #define FILE_NAME "record.bin"
 
 struct Book_Entry{
@@ -15,17 +13,6 @@ struct Book_Entry{
 };
 
 typedef struct Book_Entry Book;
-
-void save_to_indexeddb() {
-#ifdef __EMSCRIPTEN__
-    // This tells Emscripten to sync the virtual FS to IndexedDB
-    EM_ASM(
-        FS.syncfs(false, function (err) {
-            if (err) console.error('Error syncing to IndexedDB', err);
-        });
-    );
-#endif
-}
 
 void init(){
     FILE *fp = fopen(FILE_NAME, "rb");
@@ -207,16 +194,20 @@ void Display(){
     fclose(fp);
 }
 
-int ch = 0;
-void menu(){
-    printf("\n\n=======================\n");
+int main(){
+    init();
+
+    int ch = 0;
+
+    while(ch != 6){
+        printf("\n\n=======================\n");
         printf("1.Add New Book\n2.Issue Book\n3.Return Book\n4.Search Book\n5.Display Library\n6.Exit\n");
         printf("Enter Choice: ");
 
         if(scanf("%d", &ch) != 1){
             printf("Invalid input.\n");
             while(getchar() != '\n'); // clear buffer
-            return;
+            continue;
         }
 
         switch(ch){
@@ -228,24 +219,7 @@ void menu(){
             case 6: printf("\n========EXITING========\n"); break;
             default: printf("\n====Invalid Choice====\n");
         }
-}
-
-int main(){
-    #ifdef __EMSCRIPTEN__
-    EM_ASM(
-        FS.mkdir('/data');
-        FS.mount(IDBFS, {}, '/data');
-        FS.syncfs(true, function (err) {
-
-        });
-    );
-#endif
-
-    init();
-
-    
-
-    
+    }
 
     return 0;
 }
