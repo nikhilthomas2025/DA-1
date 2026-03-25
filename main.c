@@ -208,7 +208,7 @@ void Display(){
 }
 
 int ch = 0;
-void menu(){
+void menu_tick(){
     printf("\n\n=======================\n");
         printf("1.Add New Book\n2.Issue Book\n3.Return Book\n4.Search Book\n5.Display Library\n6.Exit\n");
         printf("Enter Choice: ");
@@ -225,27 +225,38 @@ void menu(){
             case 3: ReturnBook(); break;
             case 4: SearchBook(); break;
             case 5: Display(); break;
-            case 6: printf("\n========EXITING========\n"); break;
+            case 6: printf("\n========EXITING========\n");
+#ifdef __EMSCRIPTEN__
+            emscripten_cancel_main_loop(); // Stop the loop
+#endif
+            exit(0);
+            break;
             default: printf("\n====Invalid Choice====\n");
         }
 }
 
 int main(){
-    #ifdef __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__
     EM_ASM(
-        FS.mkdir('/data');
+        if (!FS.analyzePath('/data').exists) {
+            FS.mkdir('/data');
+        }
         FS.mount(IDBFS, {}, '/data');
         FS.syncfs(true, function (err) {
-
+            if (err) console.error("Error loading IDBFS:", err);
         });
     );
 #endif
 
     init();
 
-    
-
-    
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(menu_tick, 0, 1);
+#else
+    while (ch != 6) {
+        menu_tick();
+    }
+#endif
 
     return 0;
 }
