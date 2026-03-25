@@ -6,15 +6,14 @@
 #include <emscripten.h>
 #endif
 
-struct Book_Entry{
+typedef struct{
     char BookID[5];
     char Title[40];
     char Author[40];
     unsigned int status:1;
     char regno[9];
-};
+}Book;
 
-typedef struct Book_Entry Book;
 
 // Helper function to clear the input buffer
 void clearBuffer() {
