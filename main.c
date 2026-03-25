@@ -225,12 +225,14 @@ void menu_tick(){
             case 3: ReturnBook(); break;
             case 4: SearchBook(); break;
             case 5: Display(); break;
-            case 6: printf("\n========EXITING========\n");
+            case 6:
+    printf("\n========EXITING========\n");
 #ifdef __EMSCRIPTEN__
-            emscripten_cancel_main_loop(); // Stop the loop
+    emscripten_cancel_main_loop();
+#else
+    exit(0);
 #endif
-            exit(0);
-            break;
+    break;
             default: printf("\n====Invalid Choice====\n");
         }
 }

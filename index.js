@@ -4161,7 +4161,6 @@ var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
       setMainLoop(iterFunc, fps, simulateInfiniteLoop);
     };
 
-
   function _fd_close(fd) {
   try {
   
@@ -5306,8 +5305,6 @@ var wasmImports = {
   emscripten_resize_heap: _emscripten_resize_heap,
   /** @export */
   emscripten_set_main_loop: _emscripten_set_main_loop,
-  /** @export */
-  exit: _exit,
   /** @export */
   fd_close: _fd_close,
   /** @export */
