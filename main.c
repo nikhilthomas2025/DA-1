@@ -64,7 +64,7 @@ void IssueBook(){
     char ID[11], regno[9];
 
     printf("\n\n=====Enter Details=====\n");
-    printf("Book ID : "); scanf("%5s", ID);
+    printf("Book ID : "); scanf("%10s", ID);
     printf("RegNo   : "); scanf("%8s", regno);
 
     FILE* fp = fopen(FILE_NAME, "rb+");
@@ -100,7 +100,7 @@ void ReturnBook(){
     char ID[11];
 
     printf("\n\n=====Enter Details=====\n");
-    printf("Book ID : "); scanf("%5s", ID);
+    printf("Book ID : "); scanf("%10s", ID);
 
     FILE* fp = fopen(FILE_NAME, "rb+");
     if(fp == NULL){
@@ -135,7 +135,7 @@ void SearchBook(){
     char ID[11];
 
     printf("\n\n=====Enter Details=====\n");
-    printf("Book ID : "); scanf("%5s", ID);
+    printf("Book ID : "); scanf("%10s", ID);
 
     FILE* fp = fopen(FILE_NAME, "rb");
     if(fp == NULL){
